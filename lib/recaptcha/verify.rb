@@ -33,6 +33,7 @@ module Recaptcha
         if verified
           puts "verified"
           flash.delete(:recaptcha_error) if recaptcha_flash_supported? && !model
+          puts 'almost done'
           true
         else
           puts "notverified"
@@ -83,6 +84,8 @@ module Recaptcha
       puts "reply: #{reply}"
       pt1 = reply['success'].to_s == "true"
       pt2 = recaptcha_hostname_valid?(reply['hostname'], options[:hostname])
+      puts "reply is true: #{pt1}"
+      puts "hostname valid: #{pt2}"
       pt1 && pt2
     end
 
