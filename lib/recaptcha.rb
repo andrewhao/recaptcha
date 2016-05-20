@@ -47,6 +47,9 @@ module Recaptcha
   end
 
   def self.get(verify_hash, options)
+    puts "[Recaptcha.get]"
+    puts verify_hash
+    puts options
     http = if Recaptcha.configuration.proxy
       proxy_server = URI.parse(Recaptcha.configuration.proxy)
       Net::HTTP::Proxy(proxy_server.host, proxy_server.port, proxy_server.user, proxy_server.password)
@@ -62,7 +65,9 @@ module Recaptcha
       http_instance.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
     request = Net::HTTP::Get.new(uri.request_uri)
-    http_instance.request(request).body
+    respon = http_instance.request(request).body
+    puts respon
+    respon
   end
 
   def self.i18n(key, default)
