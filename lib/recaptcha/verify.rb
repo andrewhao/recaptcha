@@ -5,6 +5,7 @@ module Recaptcha
     # Your private API can be specified in the +options+ hash or preferably
     # using the Configuration.
     def verify_recaptcha(options = {})
+      puts "Enter verify: #{options}"
       options = {:model => options} unless options.is_a? Hash
       return true if Recaptcha::Verify.skip?(options[:env])
 
@@ -12,17 +13,29 @@ module Recaptcha
       attribute = options[:attribute] || :base
       recaptcha_response = options[:response] || params['g-recaptcha-response'].to_s
 
+      puts '**'
+      puts model
+      puts attribute
+      puts recaptcha_response
+      puts '**'
+
       begin
         verified = if recaptcha_response.empty?
+          puts "rre"
           false
         else
-          recaptcha_verify_via_api_call(request, recaptcha_response, options)
+          puts "not rre"
+          vvac = recaptcha_verify_via_api_call(request, recaptcha_response, options)
+          puts "vvac: #{vvac}"
+          vvac
         end
 
         if verified
+          puts "verified"
           flash.delete(:recaptcha_error) if recaptcha_flash_supported? && !model
           true
         else
+          puts "notverified"
           recaptcha_error(
             model,
             attribute,
@@ -67,11 +80,16 @@ module Recaptcha
       }
 
       reply = JSON.parse(Recaptcha.get(verify_hash, options))
-      reply['success'].to_s == "true" &&
-        recaptcha_hostname_valid?(reply['hostname'], options[:hostname])
+      puts "reply: #{reply}"
+      pt1 = reply['success'].to_s == "true"
+      pt2 = recaptcha_hostname_valid?(reply['hostname'], options[:hostname])
+      pt1 && pt2
     end
 
     def recaptcha_hostname_valid?(hostname, validation)
+      puts "recaptcha_hostname_valid:"
+      puts hostname
+      puts validation
       case validation
       when nil, FalseClass then true
       when String then validation == hostname
